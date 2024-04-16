@@ -91,6 +91,8 @@
 #define RT_USING_SERIAL_V1
 #define RT_SERIAL_USING_DMA
 #define RT_SERIAL_RB_BUFSZ 64
+#define RT_USING_SPI
+#define RT_USING_QSPI
 #define RT_USING_PIN
 #define RT_USING_HWTIMER
 
@@ -181,6 +183,15 @@
 
 /* LVGL: powerful and easy-to-use embedded GUI library */
 
+#define PKG_USING_LVGL
+#define PKG_LVGL_THREAD_PRIO 20
+#define PKG_LVGL_THREAD_STACK_SIZE 4096
+#define PKG_LVGL_DISP_REFR_PERIOD 33
+#define PKG_LVGL_USING_EXAMPLES
+#define PKG_LVGL_USING_DEMOS
+#define PKG_LVGL_USING_V080311
+#define PKG_LVGL_VER_NUM 0x080311
+#define PKG_USING_LV_MUSIC_DEMO
 
 /* u8g2: a monochrome graphic library */
 
@@ -211,18 +222,13 @@
 
 /* peripheral libraries and drivers */
 
-/* HAL & SDK Drivers */
-
-/* STM32 HAL & SDK Drivers */
-
-
-/* Kendryte SDK */
-
-
 /* sensors drivers */
 
 
 /* touch drivers */
+
+
+/* Kendryte SDK */
 
 
 /* AI packages */
@@ -286,6 +292,7 @@
 #define BSP_USING_UART4
 #define BSP_USING_UART5
 #define BSP_USING_UART2
+#define BSP_USING_QSPI
 
 /* Board extended module Drivers */
 

@@ -16,56 +16,68 @@
 #include <rtthread.h>
 #include "drv_pin.h"
 
-#define LEDB_PIN        ((1*32)+2)
-#define BUTTON_PIN      ((0*32)+23)
+#include <lvgl.h>
+#include <lv_demos.h>
+#include "lcd_impl.h"
 
-static void sw_pin_cb(void *args);
+static lcd_gc9b71_t s_lcd = {
+        .cb =
+                {
+                        .write_command_cb = app_lcd_impl_write_command,
+                        .write_data_cb    = app_lcd_impl_write_data,
+                        .delay_cb         = app_lcd_impl_delay,
+
+                },
+        .user_data = NULL,
+};
+
+static lv_disp_draw_buf_t s_disp_buf;
+static lv_color_t s_disp_buf_color[320 * 120];
+static lv_disp_drv_t s_disp_drv;
 
 int main(void)
 {
-#if defined(__CC_ARM)
-    rt_kprintf("using armcc, version: %d\n", __ARMCC_VERSION);
-#elif defined(__clang__)
-    rt_kprintf("using armclang, version: %d\n", __ARMCC_VERSION);
-#elif defined(__ICCARM__)
-    rt_kprintf("using iccarm, version: %d\n", __VER__);
-#elif defined(__GNUC__)
-    rt_kprintf("using gcc, version: %d.%d\n", __GNUC__, __GNUC_MINOR__);
-#endif
-
-    rt_pin_mode(LEDB_PIN, PIN_MODE_OUTPUT);  /* Set GPIO as Output */
-
-    rt_pin_mode(BUTTON_PIN, PIN_MODE_INPUT_PULLUP);
-    rt_pin_attach_irq(BUTTON_PIN, PIN_IRQ_MODE_FALLING, sw_pin_cb, RT_NULL);
-    rt_pin_irq_enable(BUTTON_PIN, 1);
-
-    rt_kprintf("MCXN947 HelloWorld\r\n");
-
-
-#ifdef RT_USING_SDIO
-    rt_thread_mdelay(2000);
-    if (dfs_mount("sd", "/", "elm", 0, NULL) == 0)
-    {
-        rt_kprintf("sd mounted to /\n");
-    }
-    else
-    {
-        rt_kprintf("sd mount to / failed\n");
-    }
-#endif
-
     while (1)
     {
-        rt_pin_write(LEDB_PIN, PIN_HIGH);    /* Set GPIO output 1 */
-        rt_thread_mdelay(500);               /* Delay 500mS */
-        rt_pin_write(LEDB_PIN, PIN_LOW);     /* Set GPIO output 0 */
-        rt_thread_mdelay(500);               /* Delay 500mS */
+        rt_thread_mdelay(1000);
     }
 }
 
-static void sw_pin_cb(void *args)
+void app_lvgl_flush(lv_disp_drv_t * disp_drv, const lv_area_t * area, lv_color_t * color_p)
 {
-    rt_kprintf("sw pressed\r\n");
+    epd_coord_t coord = {
+            .x_start = area->x1,
+            .x_end = area->x2,
+            .y_start = area->y1,
+            .y_end = area->y2,
+    };
+
+    lcd_gc9b71_load(&s_lcd, &coord, (const uint8_t *)color_p);
+
+    lv_disp_flush_ready(disp_drv);
 }
 
-// end file
+void lv_port_disp_init(void) {
+    app_lcd_impl_init(NULL);
+
+    lcd_gc9b71_init(&s_lcd, &lcd_h189s001_panel_config);
+    lcd_gc9b71_set_pixel_format(&s_lcd, LCD_GC9B71_RGB565);
+    lcd_gc9b71_enable_display(&s_lcd, true);
+
+    lv_disp_draw_buf_init(&s_disp_buf, s_disp_buf_color, NULL, 320 * 120);
+
+    lv_disp_drv_init(&s_disp_drv);
+    s_disp_drv.draw_buf = &s_disp_buf;
+    s_disp_drv.flush_cb = app_lvgl_flush;
+    s_disp_drv.hor_res = 320;
+    s_disp_drv.ver_res = 386;
+    lv_disp_drv_register(&s_disp_drv);
+}
+
+void lv_port_indev_init(void) {
+
+}
+
+void lv_user_gui_init(void) {
+    lv_demo_music();
+}

@@ -44,6 +44,10 @@ rt_err_t rt_qspi_configure(struct rt_qspi_device *device, struct rt_qspi_configu
     device->config.ddr_mode = cfg->ddr_mode;
     device->config.qspi_dl_width = cfg->qspi_dl_width;
 
+    device->parent.config.mode = cfg->parent.mode;
+    device->parent.config.max_hz = cfg->parent.max_hz;
+    device->parent.config.data_width = cfg->parent.data_width;
+
     return rt_spi_bus_configure(&device->parent);
 }
 

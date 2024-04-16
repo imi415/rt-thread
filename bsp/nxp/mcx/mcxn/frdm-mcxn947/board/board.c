@@ -92,6 +92,22 @@ void rt_hw_board_init()
     CLOCK_SetClkDiv(kCLOCK_DivCtimer3Clk, 1u);
     CLOCK_SetClkDiv(kCLOCK_DivCtimer4Clk, 1u);
 
+
+    CLOCK_AttachClk(kPLL0_to_PLLCLKDIV);
+    CLOCK_SetClkDiv(kCLOCK_DivPllClk, 1U);
+
+    CLOCK_AttachClk(kPLL_DIV_to_FLEXCOMM0);
+    CLOCK_AttachClk(kPLL_DIV_to_FLEXCOMM1);
+    CLOCK_AttachClk(kPLL_DIV_to_FLEXCOMM2);
+    CLOCK_AttachClk(kPLL_DIV_to_FLEXCOMM3);
+    CLOCK_AttachClk(kPLL_DIV_to_FLEXCOMM5);
+    CLOCK_AttachClk(kPLL_DIV_to_FLEXCOMM6);
+    CLOCK_AttachClk(kPLL_DIV_to_FLEXCOMM7);
+    CLOCK_AttachClk(kPLL_DIV_to_FLEXCOMM8);
+    CLOCK_AttachClk(kPLL_DIV_to_FLEXCOMM9);
+    CLOCK_SetClkDiv(kCLOCK_DivFlexcom9Clk, 1U);
+
+
     SysTick_Config(SystemCoreClock / RT_TICK_PER_SECOND);
     /* set pend exception priority */
     NVIC_SetPriority(PendSV_IRQn, (1 << __NVIC_PRIO_BITS) - 1);

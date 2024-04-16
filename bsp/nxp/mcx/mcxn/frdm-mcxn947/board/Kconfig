@@ -86,6 +86,12 @@ menu "On-chip Peripheral Drivers"
                     default y
             endif
 
+    menuconfig BSP_USING_QSPI
+        config BSP_USING_QSPI
+            bool "Enable QuadSPI support for LPSPI"
+            select RT_USING_QSPI
+            default y
+
     menuconfig BSP_USING_ADC
         config BSP_USING_ADC
             bool "Enable ADC Channel"
