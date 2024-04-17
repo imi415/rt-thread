@@ -93,12 +93,6 @@ static rt_ssize_t mcx_qspi_xfer(struct rt_spi_device *device, struct rt_spi_mess
 
         /* Fixed 1-byte command */
         LPSPI_WriteData(spi, msg->instruction.content);
-
-        /* Wait for FIFO empty... */
-        while (LPSPI_GetTxFifoCount(spi))
-        {
-            /* -- */
-        }
     }
 
     /* Command has modifier phase */
@@ -123,19 +117,20 @@ static rt_ssize_t mcx_qspi_xfer(struct rt_spi_device *device, struct rt_spi_mess
 
         for (uint8_t i = 0; i < (msg->address.size + msg->alternate_bytes.size); i++)
         {
+            while(LPSPI_GetTxFifoCount(spi) == tx_fifo_size) {
+                /* -- */
+            }
             LPSPI_WriteData(spi, ca_buf[i]);
-        }
-
-        /* Wait for FIFO empty... */
-        while (LPSPI_GetTxFifoCount(spi))
-        {
-            /* -- */
         }
     }
 
     /* Command has dummy cycles */
     if (msg->dummy_cycles)
     {
+        while(LPSPI_GetTxFifoCount(spi) != 0) {
+            /* Wait for previous TX transaction completed */
+        }
+
         /* Use 4 wire mode for maximum flexibility. */
         uint8_t dummy_bytes = msg->dummy_cycles / 2;
 
@@ -166,6 +161,10 @@ static rt_ssize_t mcx_qspi_xfer(struct rt_spi_device *device, struct rt_spi_mess
             uint8_t *recv_buf = msg->parent.recv_buf;
 
             RT_ASSERT(recv_buf);
+
+            while(LPSPI_GetTxFifoCount(spi) != 0) {
+                /* Wait for previous TX transaction completed */
+            }
 
             for (uint32_t i = 0; i < msg->parent.length; i++)
             {

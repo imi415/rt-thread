@@ -16,7 +16,7 @@ int app_lcd_impl_init(void *handle) {
 
     struct rt_qspi_configuration cfg = {
             .parent = {
-                    .max_hz = 35000000,
+                    .max_hz = 48000000,
                     .mode = 0,
             },
             .qspi_dl_width = 4,
@@ -35,19 +35,15 @@ epd_ret_t app_lcd_impl_write_command(void *handle, uint8_t *command, uint32_t le
 
     struct rt_qspi_message msg = {
             .instruction = {
-                    .content = 0x02,
+                    .content = 0x12,
                     .qspi_lines = 1,
             },
             .address = {
                     .content = address,
                     .size = 3,
-                    .qspi_lines = 1,
+                    .qspi_lines = 4,
             },
-            .alternate_bytes = {
-                    .content = 0x00,
-                    .size = 0,
-                    .qspi_lines = 1,
-            },
+            .alternate_bytes = { 0 },
             .dummy_cycles = 0,
             .parent = {
                     .send_buf = &command[1],
@@ -55,7 +51,7 @@ epd_ret_t app_lcd_impl_write_command(void *handle, uint8_t *command, uint32_t le
                     .next = NULL,
                     .length = len - 1,
             },
-            .qspi_data_lines = 1,
+            .qspi_data_lines = 4,
     };
 
     rt_qspi_transfer_message(qspi_device, &msg);
@@ -69,19 +65,15 @@ epd_ret_t app_lcd_impl_write_data(void *handle, const uint8_t *data, uint32_t le
 
     struct rt_qspi_message msg = {
             .instruction = {
-                    .content = 0x32,
+                    .content = 0x12,
                     .qspi_lines = 1,
             },
             .address = {
                     .content = address,
                     .size = 3,
-                    .qspi_lines = 1,
+                    .qspi_lines = 4,
             },
-            .alternate_bytes = {
-                    .content = 0xF0,
-                    .size = 0,
-                    .qspi_lines = 1,
-            },
+            .alternate_bytes = { 0 },
             .dummy_cycles = 0,
             .parent = {
                     .send_buf = data,
