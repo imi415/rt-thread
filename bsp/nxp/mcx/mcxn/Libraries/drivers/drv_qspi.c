@@ -58,6 +58,9 @@ static rt_err_t mcx_qspi_configure(struct rt_spi_device *device, struct rt_spi_c
     LPSPI_MasterInit(spi->spi_instance, &lpspi_cfg, spi->input_freq);
     LPSPI_SetFifoWatermarks(spi->spi_instance, 7, 7);
 
+    /* Enable TX/RX */
+    LPSPI_Enable(spi->spi_instance, true);
+
     spi->initialized = true;
 
     return RT_EOK;
@@ -77,11 +80,7 @@ static rt_ssize_t mcx_qspi_xfer(struct rt_spi_device *device, struct rt_spi_mess
     uint32_t tcr_base = LPSPI_TCR_FRAMESZ(7) | LPSPI_TCR_PCS(0) | LPSPI_TCR_CONT(1) | LPSPI_TCR_CONTC(1);
 
     /* Prepare module for new transaction */
-    LPSPI_FlushFifo(spi, true, true);
     LPSPI_ClearStatusFlags(spi, kLPSPI_AllStatusFlag);
-
-    /* Enable TX/RX */
-    LPSPI_Enable(spi, true);
 
     /* Command has command phase */
     if (msg->instruction.qspi_lines != 0)
@@ -117,7 +116,8 @@ static rt_ssize_t mcx_qspi_xfer(struct rt_spi_device *device, struct rt_spi_mess
 
         for (uint8_t i = 0; i < (msg->address.size + msg->alternate_bytes.size); i++)
         {
-            while(LPSPI_GetTxFifoCount(spi) == tx_fifo_size) {
+            while (LPSPI_GetTxFifoCount(spi) == tx_fifo_size)
+            {
                 /* -- */
             }
             LPSPI_WriteData(spi, ca_buf[i]);
@@ -127,7 +127,8 @@ static rt_ssize_t mcx_qspi_xfer(struct rt_spi_device *device, struct rt_spi_mess
     /* Command has dummy cycles */
     if (msg->dummy_cycles)
     {
-        while(LPSPI_GetTxFifoCount(spi) != 0) {
+        while (LPSPI_GetTxFifoCount(spi) != 0)
+        {
             /* Wait for previous TX transaction completed */
         }
 
@@ -162,7 +163,8 @@ static rt_ssize_t mcx_qspi_xfer(struct rt_spi_device *device, struct rt_spi_mess
 
             RT_ASSERT(recv_buf);
 
-            while(LPSPI_GetTxFifoCount(spi) != 0) {
+            while (LPSPI_GetTxFifoCount(spi) != 0)
+            {
                 /* Wait for previous TX transaction completed */
             }
 
@@ -204,7 +206,9 @@ static rt_ssize_t mcx_qspi_xfer(struct rt_spi_device *device, struct rt_spi_mess
     }
 
     spi->TCR = tcr_base & ~(LPSPI_TCR_CONTC_MASK);
-
+    while (LPSPI_GetTxFifoCount(spi) != 0)
+    {
+    }
 
     return 0;
 }

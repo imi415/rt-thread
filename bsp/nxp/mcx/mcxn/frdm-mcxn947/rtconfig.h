@@ -49,7 +49,7 @@
 #define RT_USING_CONSOLE
 #define RT_CONSOLEBUF_SIZE 128
 #define RT_CONSOLE_DEVICE_NAME "uart4"
-#define RT_VER_NUM 0x50100
+#define RT_VER_NUM 0x50200
 #define RT_BACKTRACE_LEVEL_MAX_NR 32
 #define RT_USING_HW_ATOMIC
 #define RT_USING_CPU_FFS
@@ -185,13 +185,12 @@
 
 #define PKG_USING_LVGL
 #define PKG_LVGL_THREAD_PRIO 20
-#define PKG_LVGL_THREAD_STACK_SIZE 4096
+#define PKG_LVGL_THREAD_STACK_SIZE 8192
 #define PKG_LVGL_DISP_REFR_PERIOD 33
 #define PKG_LVGL_USING_EXAMPLES
 #define PKG_LVGL_USING_DEMOS
 #define PKG_LVGL_USING_V080311
 #define PKG_LVGL_VER_NUM 0x080311
-#define PKG_USING_LV_MUSIC_DEMO
 
 /* u8g2: a monochrome graphic library */
 
@@ -222,13 +221,18 @@
 
 /* peripheral libraries and drivers */
 
+/* HAL & SDK Drivers */
+
+/* STM32 HAL & SDK Drivers */
+
+
+/* Kendryte SDK */
+
+
 /* sensors drivers */
 
 
 /* touch drivers */
-
-
-/* Kendryte SDK */
 
 
 /* AI packages */

@@ -57,6 +57,22 @@ void app_lvgl_flush(lv_disp_drv_t * disp_drv, const lv_area_t * area, lv_color_t
     lv_disp_flush_ready(disp_drv);
 }
 
+void app_lvgl_round(struct _lv_disp_drv_t * disp_drv, lv_area_t * area)
+{
+    uint16_t x1 = area->x1;
+    uint16_t x2 = area->x2;
+    uint16_t y1 = area->y1;
+    uint16_t y2 = area->y2;
+
+    // round the start of area down to the nearest even number
+    area->x1 = (x1 >> 1) << 1;
+    area->y1 = (y1 >> 1) << 1;
+
+    // round the end of area up to the nearest odd number
+    area->x2 = ((x2 >> 1) << 1) + 1;
+    area->y2 = ((y2 >> 1) << 1) + 1;
+}
+
 void lv_port_disp_init(void) {
     app_lcd_impl_init(NULL);
 
@@ -69,6 +85,7 @@ void lv_port_disp_init(void) {
     lv_disp_drv_init(&s_disp_drv);
     s_disp_drv.draw_buf = &s_disp_buf;
     s_disp_drv.flush_cb = app_lvgl_flush;
+    s_disp_drv.rounder_cb = app_lvgl_round;
     s_disp_drv.hor_res = 320;
     s_disp_drv.ver_res = 386;
     lv_disp_drv_register(&s_disp_drv);
