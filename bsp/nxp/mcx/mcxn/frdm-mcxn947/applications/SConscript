@@ -1,11 +1,16 @@
 from building import *
 import os
 
-cwd     = GetCurrentDir()
-CPPPATH = [cwd]
-src     = Glob('*.c')
+cwd = GetCurrentDir()
 
-group = DefineGroup('Applications', src, depend = [''], CPPPATH = CPPPATH)
+inc = [
+    cwd,
+    cwd + '/include'
+]
+
+src = Glob('*.c')
+
+group = DefineGroup('Applications', src, depend = [''], CPPPATH = inc)
 
 list = os.listdir(cwd)
 for item in list:

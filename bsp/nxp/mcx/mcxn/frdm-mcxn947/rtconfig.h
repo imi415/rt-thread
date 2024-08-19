@@ -128,6 +128,8 @@
 #define RT_USING_SERIAL_V1
 #define RT_SERIAL_USING_DMA
 #define RT_SERIAL_RB_BUFSZ 64
+#define RT_USING_I2C
+#define RT_USING_I2C_BITOPS
 #define RT_USING_MTD_NOR
 #define RT_USING_SPI
 #define RT_USING_SFUD
@@ -498,6 +500,8 @@
 #define BSP_USING_UART4
 #define BSP_USING_UART5
 #define BSP_USING_UART2
+#define BSP_USING_I2C
+#define BSP_USING_I2C0
 #define BSP_USING_SPI
 #define BSP_USING_SPI1
 #define BSP_USING_SPI7
