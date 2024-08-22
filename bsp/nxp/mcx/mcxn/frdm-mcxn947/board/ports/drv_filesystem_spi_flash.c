@@ -34,7 +34,8 @@
 static int app_filesystem_init(void)
 {
     rt_err_t ret = RT_EOK;
-    struct rt_spi_device *spi_device = rt_malloc(sizeof(struct rt_spi_device));
+    struct rt_qspi_device *spi_device = rt_malloc(sizeof(struct rt_qspi_device));
+    memset(spi_device, 0x00, sizeof(struct rt_qspi_device));
 
     if (!spi_device)
     {
