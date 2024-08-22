@@ -12,9 +12,10 @@
  *
  */
 
+#include <dfs_fs.h>
+#include <dfs_romfs.h>
 #include <rtdevice.h>
 #include <rtthread.h>
-#include <dfs_fs.h>
 
 #include "drv_pin.h"
 

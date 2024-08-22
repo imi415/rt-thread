@@ -11,8 +11,10 @@
 
 #include <rtthread.h>
 
-#if defined(BSP_USING_SPI7) && defined(RT_USING_SFUD) && defined(RT_USING_DFS) && defined(RT_USING_DFS_ELMFAT)
+#if defined(BSP_USING_QSPI_FLEXSPI) && defined(RT_USING_SFUD) && defined(RT_USING_DFS) && defined(RT_USING_DFS_ELMFAT)
 #include <dfs_elm.h>
+#include <dfs_ramfs.h>
+#include <dfs_romfs.h>
 #include "spi_flash_sfud.h"
 #include "dfs_fs.h"
 #include "dfs.h"
@@ -22,12 +24,12 @@
 #define DBG_LVL DBG_INFO
 #include <rtdbg.h>
 
-#define W25Q64_SPI_DEVICE_NAME      "spi70"
-#define W25Q64_SPI_BUS_NAME         "spi7"
+#define W25Q64_SPI_DEVICE_NAME      "fspi00"
+#define W25Q64_SPI_BUS_NAME         "fspi0"
 #define W25Q64_SPI_FLASH_NAME       "w25qxx"
-#define W25Q64_SPI_FLASH_CS_PIN     96
+#define W25Q64_SPI_FLASH_CS_PIN     PIN_NONE
 
-#define W25Q64_FS_MOUNT_PATH "/"
+#define W25Q64_FS_MOUNT_PATH "/webroot/images"
 
 static int app_filesystem_init(void)
 {
@@ -66,6 +68,12 @@ static int app_filesystem_init(void)
         return -RT_ERROR;
     }
 
+    if (dfs_mount(RT_NULL, "/", "rom", 0, &(romfs_root)) != 0)
+    {
+        LOG_E("Failed to mount ROMFS.\n");
+        return -RT_ERROR;
+    }
+
     if (dfs_mount(W25Q64_SPI_FLASH_NAME, W25Q64_FS_MOUNT_PATH, "elm", 0, 0) != 0)
     {
         LOG_W("Initial ELM FAT mount failed, trying to format block device.\n");
@@ -84,6 +92,22 @@ static int app_filesystem_init(void)
     }
 
     LOG_I("ELM FAT filesystem mounted.\n");
+
+    uint8_t *ramfs_buf = rt_malloc_align(65536, 64);
+    if(!ramfs_buf)
+    {
+        LOG_E("Failed to allocate RAMFS.\n");
+
+        return -6;
+    }
+
+    struct dfs_ramfs *ramfs = dfs_ramfs_create(ramfs_buf, 65536);
+
+    if(dfs_mount(RT_NULL, "/ram", "ram", 0, ramfs) != 0)
+    {
+        LOG_E("Failed to mount RAMFS.\n");
+        return -7;
+    }
 
     return RT_EOK;
 }

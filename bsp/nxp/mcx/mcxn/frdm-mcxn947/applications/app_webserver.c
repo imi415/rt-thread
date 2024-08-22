@@ -9,15 +9,24 @@
  *
  */
 
+#include <dirent.h>
+#include <fcntl.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 /* RT-Thread */
 #include <finsh.h>
 #include <rtthread.h>
 #include <webnet.h>
 #include <wn_module.h>
+
+/* cJSON */
+#include "cJSON.h"
+
+/* App */
+#include "app_camera.h"
 
 #define AW_ARRAY_SIZE(x) (sizeof(x) / sizeof(x[0]))
 
@@ -26,8 +35,8 @@
 typedef int (*app_webserver_handler_t)(int argc, char **argv);
 
 typedef struct {
-    const char *command;
-    const char *help;
+    const char             *command;
+    const char             *help;
     app_webserver_handler_t handler;
 } app_webserver_opts_t;
 
@@ -43,16 +52,100 @@ static const app_webserver_opts_t s_app_webserver_opts[] = {
     {.command = "stop", .help = "stop internal web server.", .handler = app_webserver_cmd_stop},
 };
 
+/**
+ * Capture an image and save to internal file system.
+ * @param session WebNet session pointer.
+ */
 static void app_webserver_cgi_capture(struct webnet_session *session) {
     RT_ASSERT(session != RT_NULL);
 
-    const char *response = "{\"status\": \"success\"}\r\n";
     const char *mimetype = mime_get_type(".json");
+    char       *response = rt_malloc(128);
+    char        filename[64];
+    rt_tick_t   curr_tick = rt_tick_get();
 
-    /* TODO: Capture image and save to FS, return file name relative to webroot. */
+    rt_snprintf(filename, 64, "/webroot/images/%010ld.bmp", curr_tick);
+    rt_snprintf(response, 128, "{\"status\": \"success\", \"path\": \"/images/%010ld.bmp\"}\r\n", curr_tick);
+
+    app_camera_capture(filename);
 
     webnet_session_set_header(session, mimetype, 200, "OK", rt_strlen(response));
     webnet_session_write(session, (const rt_uint8_t *)response, rt_strlen(response));
+
+    rt_free(response);
+}
+
+/**
+ * Stream a live image from camera, does not save to filesystem.
+ * @param session WebNet session pointer.
+ */
+static void app_webserver_cgi_live(struct webnet_session *session) {
+    const char *mimetype = mime_get_type(".bmp");
+
+    app_camera_capture("/ram/image.bmp");
+
+    struct stat file_stat;
+    stat("/ram/image.bmp", &file_stat);
+
+    int fd = open("/ram/image.bmp", O_RDONLY);
+
+    /* TODO: Check return values. */
+
+    webnet_session_set_header(session, mimetype, 200, "OK", file_stat.st_size);
+
+    uint8_t data[64];
+
+    while (1) {
+        const int br = read(fd, data, 64);
+        if (br != 0) {
+            webnet_session_write(session, (const rt_uint8_t *)data, br);
+        } else {
+            break;
+        }
+    }
+
+    close(fd);
+}
+
+static void app_webserver_cgi_list(struct webnet_session *session) {
+    const char *mimetype = mime_get_type(".json");
+
+    char path[64];
+
+    cJSON *j_root = cJSON_CreateObject();
+    if (!j_root) return;
+
+    cJSON *j_items = cJSON_CreateArray();
+    if (j_items == NULL) goto del_json_exit;
+    cJSON_AddItemToObject(j_root, "items", j_items);
+
+    DIR *dp = opendir("/webroot/images");
+
+    while (1) {
+        struct dirent *ep = readdir(dp);
+        if (ep == NULL) {
+            break;
+        }
+
+        rt_snprintf(path, 64, "/images/%s", ep->d_name);
+
+        cJSON *j_path = cJSON_CreateString(path);
+        if (j_path == NULL) goto close_dir_exit;
+
+        cJSON_AddItemToArray(j_items, j_path);
+    }
+
+    char *payload = cJSON_PrintUnformatted(j_root);
+    webnet_session_set_header(session, mimetype, 200, "OK", strlen(payload));
+    webnet_session_write(session, (rt_uint8_t *)payload, strlen(payload));
+
+    cJSON_free(payload);
+
+close_dir_exit:
+    closedir(dp);
+
+del_json_exit:
+    cJSON_Delete(j_root);
 }
 
 static int app_webserver_cmd_help(int argc, char **argv) {
@@ -85,6 +178,8 @@ static int app_webserver_cmd_start(int argc, char **argv) {
     webnet_set_port(port);
 
     webnet_cgi_register("capture.cgi", app_webserver_cgi_capture);
+    webnet_cgi_register("live.cgi", app_webserver_cgi_live);
+    webnet_cgi_register("list.cgi", app_webserver_cgi_list);
 
     rt_kprintf("Web server listening on port %d\n", port);
 

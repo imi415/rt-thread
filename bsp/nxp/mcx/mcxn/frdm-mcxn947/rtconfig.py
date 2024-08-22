@@ -28,8 +28,8 @@ elif CROSS_TOOL == 'iar':
 if os.getenv('RTT_EXEC_PATH'):
     EXEC_PATH = os.getenv('RTT_EXEC_PATH')
 
-BUILD = 'debug'
-#BUILD = 'release'
+#BUILD = 'debug'
+BUILD = 'release'
 
 if PLATFORM == 'gcc':
     PREFIX = 'arm-none-eabi-'
@@ -47,7 +47,7 @@ if PLATFORM == 'gcc':
     DEVICE = ' -mcpu=' + CPU + ' -mthumb -mfpu=fpv5-sp-d16 -mfloat-abi=hard -ffunction-sections -fdata-sections'
     CFLAGS = DEVICE + ' -Wall -D__FPU_PRESENT'
     AFLAGS = ' -c' + DEVICE + ' -x assembler-with-cpp -D__START=entry -D__STARTUP_CLEAR_BSS'
-    LFLAGS = DEVICE + ' -specs=nano.specs -specs=nosys.specs -Wl,--defsym=__heap_size__=0x10000,--gc-sections,-Map=rtthread.map,--print-memory-usage -Tboard/linker_scripts/MCXN947_cm33_core0_flash.ld'
+    LFLAGS = DEVICE + ' -specs=nano.specs -specs=nosys.specs -Wl,--defsym=__heap_size__=0x32000,--gc-sections,-Map=rtthread.map,--print-memory-usage -Tboard/linker_scripts/MCXN947_cm33_core0_flash.ld'
 
     CPATH = ''
     LPATH = ''
@@ -57,7 +57,7 @@ if PLATFORM == 'gcc':
         AFLAGS += ' -gdwarf-2'
         CFLAGS += ' -O0'
     else:
-        CFLAGS += ' -O2 -Os'
+        CFLAGS += ' -O2'
 
     POST_ACTION = OBJCPY + ' -O binary --remove-section=.boot_data --remove-section=.image_vertor_table --remove-section=.ncache $TARGET rtthread.bin\n' + SIZE + ' $TARGET \n'
 

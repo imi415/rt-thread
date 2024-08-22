@@ -15,10 +15,10 @@
 #define RT_HOOK_USING_FUNC_PTR
 #define RT_USING_IDLE_HOOK
 #define RT_IDLE_HOOK_LIST_SIZE 4
-#define IDLE_THREAD_STACK_SIZE 256
+#define IDLE_THREAD_STACK_SIZE 1024
 #define RT_USING_TIMER_SOFT
 #define RT_TIMER_THREAD_PRIO 4
-#define RT_TIMER_THREAD_STACK_SIZE 512
+#define RT_TIMER_THREAD_STACK_SIZE 1024
 
 /* kservice optimization */
 
@@ -52,6 +52,7 @@
 #define RT_USING_HEAP
 /* end of Memory Management */
 #define RT_USING_DEVICE
+#define RT_USING_DEVICE_OPS
 #define RT_USING_CONSOLE
 #define RT_CONSOLEBUF_SIZE 128
 #define RT_CONSOLE_DEVICE_NAME "uart4"
@@ -94,8 +95,8 @@
 #define DFS_USING_WORKDIR
 #define DFS_FD_MAX 16
 #define RT_USING_DFS_V1
-#define DFS_FILESYSTEMS_MAX 4
-#define DFS_FILESYSTEM_TYPES_MAX 4
+#define DFS_FILESYSTEMS_MAX 6
+#define DFS_FILESYSTEM_TYPES_MAX 6
 #define RT_USING_DFS_ELMFAT
 
 /* elm-chan's FatFs, Generic FAT Filesystem Module */
@@ -114,6 +115,7 @@
 /* end of elm-chan's FatFs, Generic FAT Filesystem Module */
 #define RT_USING_DFS_DEVFS
 #define RT_USING_DFS_ROMFS
+#define RT_USING_DFS_RAMFS
 #define RT_USING_DFS_TMPFS
 /* end of DFS: device virtual file system */
 
@@ -132,9 +134,11 @@
 #define RT_USING_I2C_BITOPS
 #define RT_USING_MTD_NOR
 #define RT_USING_SPI
+#define RT_USING_QSPI
 #define RT_USING_SFUD
 #define RT_SFUD_USING_SFDP
 #define RT_SFUD_USING_FLASH_INFO_TABLE
+#define RT_SFUD_USING_QSPI
 #define RT_SFUD_SPI_MAX_HZ 50000000
 #define RT_USING_WIFI
 #define RT_WLAN_DEVICE_STA_NAME "wlan0"
@@ -232,19 +236,19 @@
 #define RT_LWIP_UDP
 #define RT_LWIP_TCP
 #define RT_LWIP_RAW
-#define RT_MEMP_NUM_NETCONN 8
-#define RT_LWIP_PBUF_NUM 16
-#define RT_LWIP_RAW_PCB_NUM 4
-#define RT_LWIP_UDP_PCB_NUM 4
-#define RT_LWIP_TCP_PCB_NUM 4
-#define RT_LWIP_TCP_SEG_NUM 40
+#define RT_MEMP_NUM_NETCONN 16
+#define RT_LWIP_PBUF_NUM 32
+#define RT_LWIP_RAW_PCB_NUM 16
+#define RT_LWIP_UDP_PCB_NUM 16
+#define RT_LWIP_TCP_PCB_NUM 16
+#define RT_LWIP_TCP_SEG_NUM 64
 #define RT_LWIP_TCP_SND_BUF 8196
 #define RT_LWIP_TCP_WND 8196
 #define RT_LWIP_TCPTHREAD_PRIORITY 10
 #define RT_LWIP_TCPTHREAD_MBOX_SIZE 8
 #define RT_LWIP_TCPTHREAD_STACKSIZE 2048
 #define RT_LWIP_ETHTHREAD_PRIORITY 12
-#define RT_LWIP_ETHTHREAD_STACKSIZE 1024
+#define RT_LWIP_ETHTHREAD_STACKSIZE 2048
 #define RT_LWIP_ETHTHREAD_MBOX_SIZE 8
 #define LWIP_NETIF_STATUS_CALLBACK 1
 #define LWIP_NETIF_LINK_CALLBACK 1
@@ -301,6 +305,7 @@
 
 #define WEBNET_USING_CGI
 #define WEBNET_USING_INDEX
+#define WEBNET_USING_GZIP
 #define WEBNET_CACHE_LEVEL 0
 /* end of Select supported modules */
 #define PKG_USING_WEBNET_LATEST_VERSION
@@ -346,6 +351,8 @@
 
 /* JSON: JavaScript Object Notation, a lightweight data-interchange format */
 
+#define PKG_USING_CJSON
+#define PKG_USING_CJSON_V1717
 /* end of JSON: JavaScript Object Notation, a lightweight data-interchange format */
 
 /* XML: Extensible Markup Language */
@@ -373,6 +380,11 @@
 /* enhanced kernel services */
 
 #define PKG_USING_RT_VSNPRINTF_FULL
+#define PKG_VSNPRINTF_SUPPORT_DECIMAL_SPECIFIERS
+#define PKG_VSNPRINTF_SUPPORT_EXPONENTIAL_SPECIFIERS
+#define PKG_VSNPRINTF_SUPPORT_WRITEBACK_SPECIFIER
+#define PKG_VSNPRINTF_SUPPORT_LONG_LONG
+#define PKG_VSNPRINTF_CHECK_FOR_NUL_IN_FORMAT_SPECIFIER
 #define PKG_VSNPRINTF_INTEGER_BUFFER_SIZE 32
 #define PKG_VSNPRINTF_DECIMAL_BUFFER_SIZE 32
 #define PKG_VSNPRINTF_DEFAULT_FLOAT_PRECISION 6
@@ -441,6 +453,8 @@
 /* entertainment: terminal games and other interesting software packages */
 
 /* end of entertainment: terminal games and other interesting software packages */
+#define PKG_USING_ZLIB
+#define PKG_USING_ZLIB_LATEST_VERSION
 /* end of miscellaneous packages */
 
 /* Arduino libraries */
@@ -502,10 +516,11 @@
 #define BSP_USING_UART2
 #define BSP_USING_I2C
 #define BSP_USING_I2C0
+#define BSP_USING_I2C7
 #define BSP_USING_SPI
 #define BSP_USING_SPI1
-#define BSP_USING_SPI7
-#define BSP_USING_SPI8
+#define BSP_USING_QSPI
+#define BSP_USING_QSPI_FLEXSPI
 /* end of On-chip Peripheral Drivers */
 
 /* Board extended module Drivers */

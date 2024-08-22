@@ -51,6 +51,9 @@ menu "On-chip Peripheral Drivers"
                 config BSP_USING_I2C1
                     bool "Enable Flexcomm1 I2C"
                     default y
+                config BSP_USING_I2C7
+                    bool "Enable Flexcomm7 I2C"
+                    default y
             endif
 
     menuconfig BSP_USING_SPI
@@ -80,6 +83,18 @@ menu "On-chip Peripheral Drivers"
 
                 config BSP_USING_SPI7
                     bool "Enable Flexcomm7 as SPI"
+                    default n
+            endif
+
+    menuconfig BSP_USING_QSPI
+        config BSP_USING_QSPI
+            bool "Enable QuadSPI drivers"
+            select RT_USING_QSPI
+            default y
+
+            if BSP_USING_QSPI
+                config BSP_USING_QSPI_FLEXSPI
+                    bool "Enable QuadSPI support for FlexSPI"
                     default n
             endif
 

@@ -27,6 +27,9 @@ enum
 #ifdef BSP_USING_I2C2
     I2C2_INDEX,
 #endif
+#ifdef BSP_USING_I2C7
+    I2C7_INDEX,
+#endif
 };
 
 
@@ -76,6 +79,16 @@ struct lpc_i2c_bus lpc_obj[] =
             .name = "i2c2",
         },
 #endif
+#ifdef BSP_USING_I2C7
+    {
+        .I2C = LPI2C7,
+        .baud = 100000U,
+        .clock_attach_id = kFRO12M_to_FLEXCOMM7,
+        .clock_div_name = kCLOCK_DivFlexcom7Clk,
+        .clock_src = kCLOCK_Fro12M,
+        .name = "i2c7",
+    },
+#endif
 };
 
 static rt_ssize_t lpc_i2c_xfer(struct rt_i2c_bus_device *bus, struct rt_i2c_msg msgs[], rt_uint32_t num)
@@ -118,7 +131,7 @@ static rt_ssize_t lpc_i2c_xfer(struct rt_i2c_bus_device *bus, struct rt_i2c_msg 
             xfer.subaddressSize = 0;
             xfer.data = msg->buf;
             xfer.dataSize = msg->len;
-            if(i == 0)
+            if(i != num - 1)
                 xfer.flags = kLPI2C_TransferNoStopFlag;
             else
                 xfer.flags = kLPI2C_TransferDefaultFlag;

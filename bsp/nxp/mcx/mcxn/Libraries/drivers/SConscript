@@ -16,6 +16,9 @@ if GetDepend('BSP_USING_RTC'):
 if  GetDepend('BSP_USING_SPI'):
     src += ['drv_spi.c']
 
+if  GetDepend('BSP_USING_QSPI_FLEXSPI'):
+    src += ['drv_qspi_flexspi.c']
+
 if  GetDepend('BSP_USING_SDIO'):
     src += ['drv_sdio.c']
 

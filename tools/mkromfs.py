@@ -26,7 +26,7 @@ class File(object):
 
     @property
     def c_name(self):
-        return '_' + self._name.replace('.', '_')
+        return '_' + self._name.replace('.', '_').replace('-', '_')
 
     @property
     def bin_name(self):

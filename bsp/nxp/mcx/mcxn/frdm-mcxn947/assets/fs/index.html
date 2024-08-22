@@ -2,20 +2,25 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="css/bootstrap.min.css" rel="stylesheet"
-          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
     <title>MCX N947 RT-Thread Camera</title>
 </head>
 
 <body>
-<form method="post" action="/cgi-bin/snapshot.cgi">
-    <button type="submit" class="btn btn-primary">Submit</button>
-</form>
+<img src="http://192.168.8.106/cgi-bin/live.cgi" id="app-camera-live" class="img-fluid" alt="Preview image">
 
-<script src="js/popper.min.js"
-        integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
-        crossorigin="anonymous"></script>
-<script src="js/bootstrap.bundle.min.js"
-        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-        crossorigin="anonymous"></script>
+<script>
+    async function update_image(){
+        let uri = document.getElementById("app-camera-live").src;
+        const response = await fetch(uri)
+    }
+
+    setInterval(()=> {
+        
+    }, 1000)
+
+</script>
+
+<script src="js/popper.min.js"></script>
+<script src="js/bootstrap.bundle.min.js"></script>
 </body>
