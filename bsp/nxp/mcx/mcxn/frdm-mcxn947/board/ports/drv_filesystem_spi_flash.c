@@ -49,14 +49,14 @@ static int app_filesystem_init(void)
         .mode = RT_SPI_MASTER | RT_SPI_MODE_3 | RT_SPI_MSB,
         .max_hz = 50 * 1000 * 1000,
     };
-    ret = rt_spi_configure(spi_device, &cfg);
+    ret = rt_spi_configure((struct rt_spi_device *)spi_device, &cfg);
     if (ret != RT_EOK)
     {
         LOG_E("SPI bus configuration failed.\n");
         return -RT_ERROR;
     }
 
-    ret = rt_spi_bus_attach_device_cspin(spi_device, W25Q64_SPI_DEVICE_NAME, W25Q64_SPI_BUS_NAME, W25Q64_SPI_FLASH_CS_PIN, RT_NULL);
+    ret = rt_spi_bus_attach_device_cspin((struct rt_spi_device *)spi_device, W25Q64_SPI_DEVICE_NAME, W25Q64_SPI_BUS_NAME, W25Q64_SPI_FLASH_CS_PIN, RT_NULL);
     if (ret != RT_EOK)
     {
         LOG_E("SPI flash device attach failed.\n");
